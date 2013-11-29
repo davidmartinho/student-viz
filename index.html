@@ -1,0 +1,248 @@
+<html>
+	<head>
+		<title>Student Viz</title>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-powertip/1.2.0/jquery.powertip.min.js"></script>
+		<style>
+* {
+	font-family: 'HelveticaNeue', Helvetica, sans-serif;
+}
+
+#powerTip {
+	cursor: default;
+	font-size: 12px;
+	background-color: #333;
+	background-color: rgba(0, 0, 0, 0.8);
+	border-radius: 6px;
+	color: #fff;
+	display: none;
+	padding: 10px;
+	position: absolute;
+	white-space: nowrap;
+	z-index: 2147483647;
+}
+#powerTip:before {
+	content: "";
+	position: absolute;
+}
+#powerTip.n:before, #powerTip.s:before {
+	border-right: 5px solid transparent;
+	border-left: 5px solid transparent;
+	left: 50%;
+	margin-left: -5px;
+}
+#powerTip.e:before, #powerTip.w:before {
+	border-bottom: 5px solid transparent;
+	border-top: 5px solid transparent;
+	margin-top: -5px;
+	top: 50%;
+}
+#powerTip.n:before {
+	border-top: 10px solid #333;
+	border-top: 10px solid rgba(0, 0, 0, 0.8);
+	bottom: -10px;
+}
+#powerTip.e:before {
+	border-right: 10px solid #333;
+	border-right: 10px solid rgba(0, 0, 0, 0.8);
+	left: -10px;
+}
+#powerTip.s:before {
+	border-bottom: 10px solid #333;
+	border-bottom: 10px solid rgba(0, 0, 0, 0.8);
+	top: -10px;
+}
+#powerTip.w:before {
+	border-left: 10px solid #333;
+	border-left: 10px solid rgba(0, 0, 0, 0.8);
+	right: -10px;
+}
+#powerTip.ne:before, #powerTip.se:before {
+	border-right: 10px solid transparent;
+	border-left: 0;
+	left: 10px;
+}
+#powerTip.nw:before, #powerTip.sw:before {
+	border-left: 10px solid transparent;
+	border-right: 0;
+	right: 10px;
+}
+#powerTip.ne:before, #powerTip.nw:before {
+	border-top: 10px solid #333;
+	border-top: 10px solid rgba(0, 0, 0, 0.8);
+	bottom: -10px;
+}
+#powerTip.se:before, #powerTip.sw:before {
+	border-bottom: 10px solid #333;
+	border-bottom: 10px solid rgba(0, 0, 0, 0.8);
+	top: -10px;
+}
+#powerTip.nw-alt:before, #powerTip.ne-alt:before,
+#powerTip.sw-alt:before, #powerTip.se-alt:before {
+	border-top: 10px solid #333;
+	border-top: 10px solid rgba(0, 0, 0, 0.8);
+	bottom: -10px;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	left: 10px;
+}
+#powerTip.ne-alt:before {
+	left: auto;
+	right: 10px;
+}
+#powerTip.sw-alt:before, #powerTip.se-alt:before {
+	border-top: none;
+	border-bottom: 10px solid #333;
+	border-bottom: 10px solid rgba(0, 0, 0, 0.8);
+	bottom: auto;
+	top: -10px;
+}
+#powerTip.se-alt:before {
+	left: auto;
+	right: 10px;
+}
+
+.bubble {
+	cursor: pointer;
+	cursor: hand;
+}
+
+.progress-bar {
+	cursor: pointer;
+}
+
+.sv-spb-main-inner {
+	fill: #FF6600;
+}
+
+.sv-spb-main-outer {
+	fill: #DDDDDD;
+}
+
+.sv-spb-year-inner {
+	fill: #FFAA00;
+}
+
+.sv-spb-year-outer {
+	fill: #EEEEEE;
+}
+		</style>
+	</head>
+	<body>
+		<div id="cenas" style="display: inline; margin-right: 40px">
+
+		</div>
+		<div id="cenas2" style="display: inline">
+
+		</div>
+
+		<script>
+			(function(window) {
+				var StudentViz = {};
+				window.StudentViz = StudentViz;
+
+				StudentViz.sayHello = function(jsonEndpoint, selector, width, height) {
+
+					d3.json(jsonEndpoint, function(studentGrades) {
+						var svgContainer = d3.select(selector).append("svg")
+											.attr("width", width)
+											.attr("height", height);
+						var xAxis = svgContainer.append("line")
+											.attr("x1", 0)
+											.attr("x2", 200)
+											.attr("y1", height)
+											.attr("y2", height)
+											.attr("stroke-width", 1)
+											.attr("stroke", "black");
+						var yAxis = svgContainer.append("line")
+											.attr("x1", 0)
+											.attr("x2", 0)
+											.attr("y1", 0)
+											.attr("y2", height)
+											.attr("stroke-width", 1)
+											.attr("stroke", "black");
+						var circles = svgContainer.selectAll("circle")
+										.data(studentGrades)
+										.enter()
+										.append("circle")
+											.attr("cx", function(d, i) { return (i+1)*20; })
+											.attr("cy", function(d, i) { return d+100; })
+											.attr("r", 5)
+											.attr("data-powertip", function(d) { return d; })
+											.attr("class", "bubble")
+											.style("fill", function(d) { return "#FFFFFF"; })
+											.style("stroke", "#FF6600")
+											.style("stroke-width", 2)
+										.on("mouseover", function(d, i) {
+											d3.select(this).style("fill", "#FF6600");
+										})
+										.on("mouseout", function(d, i) {
+											d3.select(this).style("fill", "white");
+										});
+
+						$(".bubble").powerTip();
+					});
+				}
+
+				StudentViz.studentProgress = function(jsonEndpoint, selector, width, height) {
+
+					d3.json(jsonEndpoint, function(studentCredits) {
+						var svgContainer = d3.select(selector).append("svg")
+											.attr("width", width)
+											.attr("height", height);
+
+						var createBar = function(container, x, y, value, maxValue, barHeight, wrappingBarHeight, text, innerBarClass, outerBarClass) {
+							var barContainer = container.append("g")
+												.attr("transform", "translate("+x+","+y+")")
+												.attr("y", y);
+
+							//outer bar
+							barContainer.append("rect")
+								.attr("x", 0)
+								.attr("y", 0)
+								.attr("width", width)
+								.attr("height", wrappingBarHeight)
+								.attr("class", outerBarClass);
+
+							//inner bar
+							barContainer.append("rect")
+								.attr("x", 0)
+								.attr("y", ((wrappingBarHeight - barHeight)/2))
+								.attr("width", (value/maxValue)*width)
+								.attr("height", barHeight)
+								.attr("class", "progress-bar "+innerBarClass)
+								.attr("data-powertip", function(d) { return value+" of "+maxValue; });
+
+							//bar text
+							barContainer.append("text")
+								.attr("x", -50)
+								.attr("y", (wrappingBarHeight/2)+5)
+								.text(text);
+
+							return barContainer;
+						}
+						//creating main progress bar
+						createBar(svgContainer, 50, 0, studentCredits["total-credits"], studentCredits["max-credits"], 20, 40, "Total", "sv-spb-main-inner", "sv-spb-main-outer");
+
+						//create years progress bars
+						$.each(studentCredits["years"], function(i, year) {
+							var bar = createBar(svgContainer, 50, ((i+1)*25)+20, year["credits"], studentCredits["max-credits"], 10, 20, year["year"]+" Ano", "sv-spb-year-inner", "sv-spb-year-outer");
+							bar.on("click", function() {
+								console.log(year["completed-courses"]);
+							});
+						});
+
+						$(".progress-bar").powerTip({ placement: 's' });
+					});
+				}
+
+
+				return StudentViz;
+			})(this);
+			
+			StudentViz.sayHello('student.json', "#cenas", 200, 200);
+			StudentViz.studentProgress('student-credits.json', "#cenas2", 400, 200);
+		</script>
+	</body>
+</html>

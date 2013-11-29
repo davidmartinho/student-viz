@@ -1,0 +1,35 @@
+{
+	"total-credits": 160,
+	"max-credits": 285,
+	"years": [
+		{
+			"year": 1,
+			"credits": 145,
+			"completed-courses": [
+				{ "name": "Fundamentos de Programação", "nota-final": 18 },
+				{ "name": "Sistemas Digitais", "nota-final": 15 }
+			] 
+		}, {
+			"year": 2,
+			"credits": 65,
+			"completed-courses": [
+				{ "name": "Fundamentos de Programação", "nota-final": 18 },
+				{ "name": "Sistemas Digitais", "nota-final": 15 }
+			] 
+		}, {
+			"year": 3,
+			"credits": 76,
+			"completed-courses": [
+				{ "name": "Fundamentos de Programação", "nota-final": 18 },
+				{ "name": "Sistemas Digitais", "nota-final": 15 }
+			] 
+		}, {
+			"year": 4,
+			"credits": 12,
+			"completed-courses": [
+				{ "name": "Fundamentos de Programação", "nota-final": 18 },
+				{ "name": "Sistemas Digitais", "nota-final": 15 }
+			] 
+		}
+	]
+}
